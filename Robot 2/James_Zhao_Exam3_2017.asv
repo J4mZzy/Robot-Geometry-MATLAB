@@ -1,0 +1,44 @@
+clc; clear; %clear work space and command window
+%% Exam 2018
+%RRRRPRRR robot
+%ball-and-socket becomes RRR
+
+P_A = [73.23,-84.85,-84.85]';
+P_B = [595,0,160]';
+P_C = [132.79,-47.81,-148.99]';
+P_D = [132.79,-153.64,-112.31]';
+P_E = [586.27,-79.92,-100.40]';
+
+%known velocities
+w_0_1 = 30; %S1
+w_0_5 = 25; %S6 (0 to 5)
+
+%joints 
+S1 = [1,0,0]';
+S0L1 = [0,0,0]';
+
+S_bs1 = [1,0,0]'; % ball-and-socket (3DOF)
+S0L_bs1 = cross(P_A,S_bs1); %centered at A
+S_bs2 = [0,1,0]';
+S0L_bs2 = cross(P_A,S_bs2);
+S_bs3 = [0,0,1]';
+S0L_bs3 = cross(P_A,S_bs3);
+
+S3 = P_E-P_D; %prismatic
+
+S4 = P_D-P_C;
+S0L4 = cross(P_B,S4); 
+S5 = [1,0,0]';
+S0L5 = cross(P_B,S5); 
+S6 = [1,0,0];
+S0L6 = [0,0,0]'; %close loop,S6 goes through origin
+
+
+%Jacobian (without the unknowns)
+J = [S_bs1 S_bs2 S_bs3 0 S4 S5; S0L_bs1 S0L_bs2 S0L_bs3 S3 S0L4 S];
+
+%individual joint angluar/linear velocities
+w = J\(-w_0_1*[S1;S0L1]-w_0_5*[S6;S0L6]); %RHS is the known (negated)
+
+
+
